@@ -9,6 +9,8 @@
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
 /* Brand accents and semantic status colors. */
+.brand{margin:0 0 51px;width:100%;min-height:43px}
+.brand-logo{display:block;width:100%;height:auto;object-fit:contain}
 .nav-item.active svg,.brand-mark{color:var(--brand)}
 .stat>div>span{color:var(--brand);background:var(--brand-soft)}
 .button.primary{box-shadow:0 3px 10px #d64e601c}
