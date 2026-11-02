@@ -1,3 +1,4 @@
+import type { Expense, LabourEntry, Invoice, ClientPayment } from './finance';
 export type Stage = 'New' | 'Contacted' | 'Site Visit' | 'Quotation Sent' | 'Negotiation' | 'Won' | 'Lost';
 export const stages: Stage[] = ['New','Contacted','Site Visit','Quotation Sent','Negotiation','Won','Lost'];
 export interface Entity { id: string; tenantId: string }
@@ -13,7 +14,7 @@ export interface Item extends Entity { sku: string; name: string; categoryId: st
 export interface PurchaseLine { id: string; itemId: string; description: string; unit: string; quantity: number; received: number; costPaise: number; gstPercent: number }
 export interface Purchase extends Entity { reference: string; vendor: string; vendorId?: string; projectId: string; amount: number; status: 'Awaiting approval' | 'Ordered' | 'Partially received' | 'Received'; due: string; lines?: PurchaseLine[] }
 export interface StockMovement extends Entity { itemId: string; locationId: string; type: 'Opening' | 'Receipt' | 'Issue'; quantity: number; date: string; reference: string; projectId?: string; purchaseId?: string; purchaseLineId?: string; note: string }
-export interface Workspace { leads: Lead[]; quotations: Quotation[]; projects: Project[]; tasks: Task[]; purchases: Purchase[]; categories: Category[]; taxCategories: TaxCategory[]; vendors: Vendor[]; items: Item[]; stockMovements: StockMovement[] }
+export interface Workspace { leads: Lead[]; quotations: Quotation[]; projects: Project[]; tasks: Task[]; purchases: Purchase[]; categories: Category[]; taxCategories: TaxCategory[]; vendors: Vendor[]; items: Item[]; stockMovements: StockMovement[]; expenses: Expense[]; labourEntries: LabourEntry[]; invoices: Invoice[]; payments: ClientPayment[] }
 export function stockOnHand(movements: StockMovement[], itemId: string, locationId?: string) { return Math.round(movements.filter(m=>m.itemId===itemId&&(!locationId||m.locationId===locationId)).reduce((sum,m)=>sum+(m.type==='Issue'?-m.quantity:m.quantity),0)*1000)/1000; }
 export function purchaseTotals(lines: Pick<PurchaseLine,'quantity'|'costPaise'|'gstPercent'>[]) { const subtotal=lines.reduce((s,l)=>s+Math.round(l.quantity*l.costPaise),0);const tax=lines.reduce((s,l)=>s+Math.round(Math.round(l.quantity*l.costPaise)*l.gstPercent/100),0);return {subtotal,tax,total:subtotal+tax}; }
 export function quoteTotals(lines: QuoteLine[]) { const subtotal = lines.reduce((s,l)=>s+Math.round(l.quantity*l.pricePaise),0); const tax=lines.reduce((s,l)=>s+Math.round(Math.round(l.quantity*l.pricePaise)*l.gstPercent/100),0); const cost=lines.reduce((s,l)=>s+Math.round(l.quantity*l.costPaise),0); return {subtotal,tax,total:subtotal+tax,cost,margin:subtotal ? (subtotal-cost)/subtotal*100 : 0}; }

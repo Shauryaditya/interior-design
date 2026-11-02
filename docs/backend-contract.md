@@ -8,7 +8,7 @@ Base URL: `VITE_API_BASE_URL`, default `/api/v1`. JSON requests and responses. R
 
 ### GET /workspace
 
-Returns `Workspace` containing arrays `leads`, `quotations`, `projects`, `tasks`, `purchases`, `categories`, `taxCategories`, `vendors`, `items`, `stockMovements`. Return only records and sensitive fields authorized for the session. Current screens represent the owner experience and expect the full owner schema; add permission-aware DTOs/UI before enabling other personas. Introduce pagination/list endpoints as real data volumes grow, behind the repository boundary.
+Returns `Workspace` containing arrays `leads`, `quotations`, `projects`, `tasks`, `purchases`, `categories`, `taxCategories`, `vendors`, `items`, `stockMovements`, `expenses`, `labourEntries`, `invoices`, `payments`. Return only records and sensitive fields authorized for the session. Current screens represent the owner experience and expect the full owner schema; add permission-aware DTOs/UI before enabling other personas. Introduce pagination/list endpoints as real data volumes grow, behind the repository boundary.
 
 ### POST /commands
 
@@ -33,6 +33,14 @@ Response: fresh authorized `Workspace`, committed transactionally after success.
 | purchase.receive | id, locationId, date, note, lines: [{lineId, quantity}] | Lock order and stock rows; prohibit excess receipts; atomically append stock movements and update received quantities/status |
 | stock.opening | itemId, locationId, quantity, date, note | Authorized opening balance entry with reference and audit event |
 | stock.issue | itemId, locationId, projectId, quantity, date, note | Verify stock under a transaction/lock, prohibit negative stock, record project consumption |
+| expense.create | projectId, description, category, claimant, amount, date, reference | Create pending project cost claim; validate actor and evidence |
+| labour.create | projectId, payee, work, basis, unit, quantity, ratePaise, date | Calculate bill amount; validate contractor and work quantity |
+| cost.approve | id, kind: expense/labour | Atomically approve once and add cost to project actuals; enforce approver rights |
+| cost.pay | id, kind: expense/labour | Record manual paid status only; actual banking/reimbursement allocation is future work |
+| invoice.create | projectId, mode, taxTreatment, date, due, lines, note | Create draft with rate/tax snapshots; resolve client from project; production tax/numbering must be server-controlled |
+| invoice.issue | id | Finalize draft only; production must require statutory fields and authorized tax treatment |
+| invoice.cancel | id | Retain cancelled record; disallow cancellation with receipts pending a credit/refund workflow |
+| payment.create | invoiceId, amount, date, mode, reference, note | Allocate to issued invoice only; derive project, prevent excess/duplicate receipts, transact with row locks |
 
 Amounts are integer paise. Quantities are decimal numbers; backend should use Decimal and define consistent rounding. `Lead.value`, project budget/spent, purchase amount and quote cost/price are all paise. Quote line tax currently rounds per line to nearest paise. GST is only an estimated UI calculation; final place-of-supply, tax classification and invoice rules belong on the server. Project baseline uses internal cost, not the GST-inclusive selling value. Keep contract revenue separately in the production schema.
 
@@ -48,7 +56,18 @@ Order states: Awaiting approval → Ordered → Partially received → Received.
 
 Stock is derived from immutable-in-UI movements: Opening + Receipt − Issue, by item and location. `store` is the demo main store; project IDs represent site locations. Replace these with tenant-scoped `StockLocation` records for production. Issues represent consumption assigned to a project, not transfers; transfers/returns, damaged goods, stock counts, valuation, expiry/serial/batch tracking and issue costing are not implemented. Project financial actuals are not recalculated by these quantity-only movements. Reorder levels are item-wide guidance; location filters use the same configured level as a reference.
 
-The browser demo adds the new master/stock arrays to older saved workspaces without replacing existing lead/project/task/quotation/purchase records. HTTP mode expects the full expanded schema and does not seed missing server data.
+The browser demo adds the new master/stock/finance arrays to older saved workspaces without replacing existing lead/project/task/quotation/purchase records. HTTP mode expects the full expanded schema and does not seed missing server data.
+
+## Financial demo boundaries
+
+Types and derived totals are in `src/finance.ts`; command handlers are in `src/data/financeCommands.ts`. They follow the same transport boundary as other modules. Financial records are sample data and do not establish legally compliant invoicing or accounting.
+
+- Expense and labour records start pending. Approval increments `Project.spent` once; marking paid does not add another cost or initiate banking. Seeded approved/paid costs are already included in carried-forward project actuals. Backends should derive actuals from a proper cost ledger instead of trusting submitted totals or maintaining an unlocked increment.
+- Invoice states are Draft, Issued, Cancelled. Mode is GST or Non-GST. Split GST, IGST or No GST is explicitly selected for demonstration; place-of-supply rules, GSTIN/HSN validation, accountant review and non-GST authorization are not inferred by this UI.
+- Invoice references use random, separate `GST-DEMO` / `NGST-DEMO` prefixes, not production invoice series. Invoice creation snapshots descriptions, quantities, selling rates and GST percentages. There are no PDF, credit/debit note, proforma, e-invoice or regulatory export flows.
+- Payments are client collections allocated to one issued invoice. Positive integer paise, remaining balance, receipt reference and invoice/date consistency are checked. Pending/draft/cancelled invoices cannot receive payments. Store idempotency keys, receipt uniqueness and remaining-balance checks transactionally in production.
+- Ageing uses India business date and invoice due date. Receivables and collections include estimated tax; billed revenue excludes it. Draft/cancelled invoice values are excluded from reporting.
+- Report contribution = issued pre-tax revenue − project actual costs; it is not a complete company net P&L. Detailed approved expenses/labour are broken out, with remaining project costs shown as carried-forward costs. Orders/stock movements do not add costs a second time. Revenue recognition, overhead allocation and accounting reconciliations are future work.
 
 ## Integrity before production
 
@@ -74,6 +93,10 @@ The browser demo adds the new master/stock arrays to older saved workspaces with
   "taxCategories": [],
   "vendors": [],
   "items": [],
-  "stockMovements": []
+  "stockMovements": [],
+  "expenses": [],
+  "labourEntries": [],
+  "invoices": [],
+  "payments": []
 }
 ```

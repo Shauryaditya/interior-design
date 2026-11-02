@@ -30,6 +30,10 @@ Browser tests use installed Microsoft Edge. Change the Playwright channel for ot
 - Master entries: create/edit categories, tax categories, vendors and category-wise product/items with SKU, unit, HSN, rates and reorder levels.
 - Vendor-category-linked multi-line purchase orders, tax/rate snapshots, approval and partial/full material receipts.
 - Store/site inventory, opening stock, stock issues for project consumption, movement history and low-stock filters.
+- Expense claims and quantity/rate labour bills, with approval and manual settlement status.
+- Demo GST/non-GST invoice drafts, finalization/cancellation, estimated tax splits and billing previews.
+- Client receipts allocated to invoices, partial collections, receivables and ageing buckets.
+- Project billed-revenue/cost contribution reports, cost breakdown and CSV export. This is not complete accounting or statutory invoicing.
 - Persistent demo state, loading/error feedback, settings and reset.
 
 ## Backend handoff

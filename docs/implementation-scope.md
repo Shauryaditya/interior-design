@@ -13,7 +13,10 @@ This delivery starts frontend development; it is not completion of PRD phases 1â
 | Tasks | Create, assign, due date, priority and status | Subtasks, comments, files, DPR, reminders, calendar, real workload |
 | Procurement | Vendor/category-linked multi-item orders, estimated tax/rate snapshots, approval, partial/full receipts into inventory | Requisitions, RFQs, vendor comparison, branded PO/GRN documents, damage/returns, bill matching, payables |
 | Inventory | Store/site stock balances, opening entries, purchase receipts, project consumption issues, movement ledger, low-stock filters | Transfers, reversals, inventory valuation, reservations, unit conversion, concurrent server transactions |
-| Finance | Project cost display and quotation estimates | Invoices, payments, GST/non-GST permissions/series, ageing, P&L, overheads, accounting exports |
+| Expense & labour | Project-tagged expense claims, day/measurement/lump-sum labour bills, approval, manual paid status; approvals update project actuals | Receipt attachments, petty cash, advances, running measurements, reimbursement payment allocation and production approvals |
+| Invoicing | Demo GST/non-GST draft records, tax split/IGST estimate, demo references, finalize/cancel, detail preview | Statutory company/client details, place-of-supply validation, permissions, gapless numbering, milestones, PDF, proforma/credit/debit documents, GST exports |
+| Payments & receivables | Invoice-linked client receipts, partial collections, balance/ageing, payment history | Bank reconciliation, unallocated advances, refunds, vendor payment scheduling, gateways and reminders |
+| P&L & reporting | Project cost budget/actual, issued revenue ex GST, billed contribution/margin, collection/receivable summaries, cost breakdown and CSV | Revenue recognition, full gross/net company P&L, overhead allocation, cash-flow forecasts, tax/accounting reconciliation |
 | Platform | Typed domain and repository, demo/HTTP adapters, responsive layout | Real auth/RBAC, immutable audit log, storage, backups, monitoring, CI/CD, installable PWA/offline strategy |
 | Integrations | Transport boundary and event architecture notes | Email, WhatsApp, Meta, payments, AI; no live calls implemented |
 
@@ -28,3 +31,7 @@ This delivery starts frontend development; it is not completion of PRD phases 1â
 ## Suggested next slice
 
 Implement session auth and tenant-scoped PostgreSQL records, then the expanded workspace/command contract. Replace demo locations with location IDs and names with user/client IDs. Persist master data, quotation snapshots, purchase snapshots and stock movements with server-side validation and transactions. Pilot a real quotation and purchase receipt before expanding finance.
+
+## PRD navigation coverage
+
+All nine requested module groups now have screen coverage: Master Data; CRM & leads; Quotations & BOQ; Projects and Tasks; Procurement; Expenses & Labour; Invoicing; Payments & Receivables; Project P&L & Reports. Product, vendor and inventory screens remain supplementary entries. Screen coverage is not a statement that every PRD requirement is implemented; use the status table above for boundaries.
