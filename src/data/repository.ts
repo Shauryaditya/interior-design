@@ -1,11 +1,13 @@
 import type { Workspace, Lead, Task, QuoteLine } from '../domain';
 import { quoteTotals } from '../domain';
 import { seed } from './seed';
-export interface Commands { 'lead.create': Omit<Lead,'id'|'tenantId'>; 'lead.stage': {id:string;stage:Lead['stage']}; 'task.create': Omit<Task,'id'|'tenantId'>; 'task.status': {id:string;status:Task['status']}; 'quote.save': {id:string;lines:QuoteLine[]}; 'quote.convert': {id:string}; 'purchase.approve': {id:string} }
+import { masterSeed } from './masterSeed';
+import { applyMasterCommand, type MasterCommands } from './masterCommands';
+export interface Commands extends MasterCommands { 'lead.create': Omit<Lead,'id'|'tenantId'>; 'lead.stage': {id:string;stage:Lead['stage']}; 'task.create': Omit<Task,'id'|'tenantId'>; 'task.status': {id:string;status:Task['status']}; 'quote.save': {id:string;lines:QuoteLine[]}; 'quote.convert': {id:string}; 'purchase.approve': {id:string} }
 export interface Repository { load():Promise<Workspace>; command<K extends keyof Commands>(type:K,payload:Commands[K]):Promise<Workspace> }
 const key='the-one-workspace-v1';
 class DemoRepository implements Repository {
- async load(){const raw=localStorage.getItem(key); if(!raw)return structuredClone(seed); try {const data=JSON.parse(raw); if(!['leads','projects','tasks','quotations','purchases'].every(k=>Array.isArray(data[k])))throw Error();return data as Workspace;} catch {throw new Error('Saved demo data is unreadable. Use Reset demo in Settings to restore it.');}}
+ async load(){const raw=localStorage.getItem(key); if(!raw)return structuredClone(seed); try {const data=JSON.parse(raw); if(!['leads','projects','tasks','quotations','purchases'].every(k=>Array.isArray(data[k])))throw Error();for(const field of Object.keys(masterSeed) as (keyof typeof masterSeed)[]){if(data[field]===undefined)data[field]=structuredClone(masterSeed[field]);else if(!Array.isArray(data[field]))throw Error();}return data as Workspace;} catch {throw new Error('Saved demo data is unreadable. Use Reset demo in Settings to restore it.');}}
  async command<K extends keyof Commands>(type:K,payload:Commands[K]) {const data=await this.load();const p=payload as any;const entity={id:crypto.randomUUID(),tenantId:'the-one-demo'};
  switch(type){
  case 'lead.create':data.leads.unshift({...p,...entity});break;
@@ -14,7 +16,8 @@ class DemoRepository implements Repository {
  case 'task.status':{const task=data.tasks.find(x=>x.id===p.id);if(!task)throw Error('Task not found');task.status=p.status;break;}
  case 'quote.save':{const q=data.quotations.find(x=>x.id===p.id);if(!q||q.status==='Approved')throw Error('Approved quotations are locked');q.lines=p.lines;q.version++;break;}
  case 'quote.convert':{const q=data.quotations.find(x=>x.id===p.id);if(!q)throw Error('Quotation not found');if(data.projects.some(x=>x.quotationId===q.id))throw Error('This quotation already has a project');q.status='Approved';data.projects.unshift({...entity,name:q.name.split(' · ')[0],client:q.client,location:'Site address pending',owner:'Priya Mehta',status:'Design',progress:0,budget:quoteTotals(q.lines).cost,spent:0,due:'',quotationId:q.id});break;}
- case 'purchase.approve':{const po=data.purchases.find(x=>x.id===p.id);if(!po||po.status!=='Awaiting approval')throw Error('Purchase order cannot be approved');po.status='Ordered';break;}}
+ case 'purchase.approve':{const po=data.purchases.find(x=>x.id===p.id);if(!po||po.status!=='Awaiting approval')throw Error('Purchase order cannot be approved');po.status='Ordered';break;}
+ default:applyMasterCommand(data,{type,payload} as Parameters<typeof applyMasterCommand>[1]);}
  localStorage.setItem(key,JSON.stringify(data));return data;
  }
 }

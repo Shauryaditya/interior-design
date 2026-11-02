@@ -7,17 +7,19 @@ This delivery starts frontend development; it is not completion of PRD phases 1â
 | PRD area | Current delivery | Next work |
 | --- | --- | --- |
 | CRM | Manual leads, stages, owner, source, follow-up date | Activity history, lost reasons, reminders, imports, campaign models |
+| Master data | Create/edit item categories, tax categories, vendors and category-wise product/item catalog; units, HSN, rates, reorder level | Client master, imports, vendor-specific rates/history, master archival, server validation |
 | Quotation | Room/line editor, costs, sell rates, estimated GST, revision counter, demo approval conversion | Masters, templates, immutable revision history/comparison, discounts/options, PDF/share links, client acceptance |
 | Projects | Summary, cost baseline, actual cost, completion, project detail | Milestones, change orders, documents, Gantt, actual expense rollups |
 | Tasks | Create, assign, due date, priority and status | Subtasks, comments, files, DPR, reminders, calendar, real workload |
-| Procurement | Sample orders and approval transition | Requisitions, RFQs, vendor comparison, creation, GRNs, bill matching, payables |
+| Procurement | Vendor/category-linked multi-item orders, estimated tax/rate snapshots, approval, partial/full receipts into inventory | Requisitions, RFQs, vendor comparison, branded PO/GRN documents, damage/returns, bill matching, payables |
+| Inventory | Store/site stock balances, opening entries, purchase receipts, project consumption issues, movement ledger, low-stock filters | Transfers, reversals, inventory valuation, reservations, unit conversion, concurrent server transactions |
 | Finance | Project cost display and quotation estimates | Invoices, payments, GST/non-GST permissions/series, ageing, P&L, overheads, accounting exports |
 | Platform | Typed domain and repository, demo/HTTP adapters, responsive layout | Real auth/RBAC, immutable audit log, storage, backups, monitoring, CI/CD, installable PWA/offline strategy |
 | Integrations | Transport boundary and event architecture notes | Email, WhatsApp, Meta, payments, AI; no live calls implemented |
 
 ## Decisions to confirm with client
 
-1. Final logo/brand assets and existing workbook samples.
+1. Existing workbook samples and final master categories/rates. Client logo and rose palette are incorporated.
 2. User roles, project assignment rules and financial field permissions.
 3. Quotation approval/discount limits and PO approval thresholds.
 4. Accountant-approved tax treatment, billing modes and invoice numbering.
@@ -25,4 +27,4 @@ This delivery starts frontend development; it is not completion of PRD phases 1â
 
 ## Suggested next slice
 
-Implement session auth and tenant-scoped PostgreSQL records, then the workspace/command contract. Replace names with user/client IDs. Implement master data, quotation snapshots and server-side costing first. Pilot a real quotation and review the workflow with the owner before expanding finance and procurement.
+Implement session auth and tenant-scoped PostgreSQL records, then the expanded workspace/command contract. Replace demo locations with location IDs and names with user/client IDs. Persist master data, quotation snapshots, purchase snapshots and stock movements with server-side validation and transactions. Pilot a real quotation and purchase receipt before expanding finance.

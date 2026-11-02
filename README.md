@@ -27,7 +27,9 @@ Browser tests use installed Microsoft Edge. Change the Playwright channel for ot
 - Editable room-wise BOQ, paise-based pricing and estimated line GST, save revision counter, approval locking and project baseline conversion.
 - Projects, detail panels, search/status filters and CSV export.
 - Task creation, assignment, due dates and status board.
-- Purchase order list and demo approval action.
+- Master entries: create/edit categories, tax categories, vendors and category-wise product/items with SKU, unit, HSN, rates and reorder levels.
+- Vendor-category-linked multi-line purchase orders, tax/rate snapshots, approval and partial/full material receipts.
+- Store/site inventory, opening stock, stock issues for project consumption, movement history and low-stock filters.
 - Persistent demo state, loading/error feedback, settings and reset.
 
 ## Backend handoff
@@ -36,4 +38,4 @@ Copy `.env.example` to `.env`, change `VITE_DATA_SOURCE` to `http`, and set `VIT
 
 The HTTP adapter is provided but has not been tested against an actual server. Backend integration requires implementing the contract, authentication, authorization and server validation. No claim of production readiness is made.
 
-All displayed names, amounts and assignments are fictional. Google Fonts is optional; system font fallbacks work without it. The original client website could not be reached, so the visual identity here is provisional.
+All displayed contacts, amounts and assignments are sample data. The supplied client logo and screenshot-based rose palette are included. Google Fonts is optional; system font fallbacks work without it. Older saved demos gain the new master arrays without losing previous changes.

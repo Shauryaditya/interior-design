@@ -1,6 +1,8 @@
 import type { Workspace } from '../domain';
+import { masterSeed } from './masterSeed';
 const tenantId='the-one-demo';
 export const seed: Workspace = {
+ ...masterSeed,
  leads:[
  {id:'l1',tenantId,name:'A home for new beginnings',client:'Rohan & Ananya Shah',location:'3 BHK · Powai',value:280000000,stage:'Negotiation',source:'Referral',owner:'Priya Mehta',followUp:'2026-11-03'},
  {id:'l2',tenantId,name:'The sea-facing residence',client:'Vikram Kapoor',location:'4 BHK · Worli',value:450000000,stage:'Site Visit',source:'Instagram',owner:'Arjun Desai',followUp:'2026-11-02'},
